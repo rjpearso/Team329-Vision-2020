@@ -164,7 +164,7 @@ while True:
       image_np,
       output_dict['detection_boxes'],
       output_dict['detection_classes'],
-      #output_dict['detection_scores'],
+      output_dict['detection_scores'],
       category_index,
       instance_masks=output_dict.get('detection_masks'),
       use_normalized_coordinates=True,
