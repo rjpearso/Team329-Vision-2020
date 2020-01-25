@@ -15,6 +15,7 @@ import tensorflow as tf
 import zipfile
 import picamera
 import socket
+from networktables import NetworkTables as nt
 
 from distutils.version import StrictVersion
 from collections import defaultdict
