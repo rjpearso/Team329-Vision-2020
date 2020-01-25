@@ -25,7 +25,7 @@ areaFactor = 0.8
 count = 1
 countframe = 0
 
-import smbus #only need this if you want to send info to the arduino
+#import smbus #only need this if you want to send info to the arduino
 ## It works without it.  Just don't uncomment the smbus lines below.
 ## We used this to turn a pixel read when we saw something
 ## it was helpful but total extra
@@ -174,12 +174,15 @@ while True:
                     #print(ce[0])
                     if (ce[0] - 320) < 0:
                         centerOffset = round(abs(ce[0]-320),1)
+                        tryAgain = True
                         #print(str(centerOffset) + " Pixels to the left away from center.")
                     elif (ce[0]-320) > 0:
+                        tryAgain = True
                         centerOffset = round((ce[0] - 320),1)
                         ang = ang*-1
                        # print(str(centerOffset) + " Pixels to the right away from center.")
                     else:
+                        tryAgain = False
                         print("Perfect Angle")
 
                     dist1 = (ang/320)*centerOffset
@@ -214,10 +217,10 @@ while True:
                     #turn 20 degrees to the see 2 then recheck (robot code)
                     if cnts[0][0][0][0] >= 320:
                         turnangle=20 # not sure 20 is the right number
-                        tryAgain = True #tell robot code to try again after move
+                        #tryAgain = True #tell robot code to try again after move
                     else: #if not right its left
                         turnangle=-20
-                        tryAgain = True
+                       # tryAgain = True
                 #########################################
                         #More than 1 target
                 #########################################
@@ -299,7 +302,7 @@ while True:
                                     pixInchConv = centerInches / abs((leftCenter[0][0] - rightCenter[0][0]))
                                     perpDist = pixInchConv * (((leftCenter[0][0] + rightCenter[0][0]) / 2) - 320) #need to test this on robot
                                     turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                                    tryAgain = False #we should hit it
+                                   # tryAgain = False #we should hit it
                                     
                                 elif leftCenter[0][0] > rightCenter[0][0] :
                                     dist, theta = OffsetCalcProperties(rightCenter, leftCenter)#dist = CalcProperties(rightCenter, leftCenter)
@@ -309,7 +312,7 @@ while True:
                                     pixInchConv = centerInches / abs((leftCenter[0][0] - rightCenter[0][0]))
                                     perpDist = pixInchConv * (((leftCenter[0][0] + rightCenter[0][0]) / 2) - 320) #need to test this on robot
                                     turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                                    tryAgain = True
+                                    #tryAgain = True
                                 else:
                                     dist, theta = OffsetCalcProperties(rightCenter, leftCenter)#dist = CalcProperties(rightCenter, leftCenter)
                                     #print('Distance: ' + str(dist)) ### Put this back for testing
@@ -318,7 +321,7 @@ while True:
                                     pixInchConv = centerInches / abs((leftCenter[0][0] - rightCenter[0][0]))
                                     perpDist = pixInchConv * (((leftCenter[0][0] + rightCenter[0][0]) / 2) - 320) #need to test this on robot
                                     turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                                    tryAgain = True
+                                    #tryAgain = True
                                     
                             elif leftMaxArea[0][0] > leftCenter[0][0]:
                                 dist, theta = OffsetCalcProperties(rightCenter, leftCenter)#dist = CalcProperties(rightCenter, leftCenter)
@@ -328,7 +331,7 @@ while True:
                                 pixInchConv = centerInches / abs((leftMaxArea[0][0] - rightMaxArea[0][0]))
                                 perpDist = pixInchConv * (((leftMaxArea[0][0] + rightMaxArea[0][0]) / 2) - 320) #need to test this on robot
                                 turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                                tryAgain = True
+                              #  tryAgain = True
                                 
                             elif rightMaxArea[0][0] > rightCenter[0][0]:
                                 dist, theta = OffsetCalcProperties(rightCenter, leftCenter)#dist = CalcProperties(rightCenter, leftCenter) #= (95.841 * x ** -0.449)*12 #this is the formula to calc distance.  You will need to do this in excel for your camera
@@ -338,7 +341,7 @@ while True:
                                 pixInchConv = centerInches / abs((leftMaxArea[0][0] - rightMaxArea[0][0]))
                                 perpDist = pixInchConv * (((leftMaxArea[0][0] + rightMaxArea[0][0]) / 2) - 320) #need to test this on robot
                                 turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                                tryAgain = True
+                               # tryAgain = True
                                 
                             else:
                                 dist, theta = OffsetCalcProperties(rightCenter, leftCenter)#£dist = CalcProperties(rightCenter, leftCenter) (95.841 * x ** -0.449)*12 #this is the formula to calc distance.  You will need to do this in excel for your camera
@@ -348,7 +351,7 @@ while True:
                                 pixInchConv = centerInches / abs((leftMaxArea[0][0] - rightMaxArea[0][0]))
                                 perpDist = pixInchConv * (((leftMaxArea[0][0] + rightMaxArea[0][0]) / 2) - 320) #need to test this on robot
                                 turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                                tryAgain = True
+                              #  tryAgain = True
 
 
 
