@@ -151,7 +151,7 @@ while True:
   data = np.fromstring(stream.getvalue(), dtype=np.uint8)
   # "Decode" the image from the array, preserving colour
   image = cv2.imdecode(data, 1)
-  image = Image.open(image)
+  image = stream.read()
   # the array based representation of the image will be used later in order to prepare the
   # result image with boxes and labels on it.
   image_np = load_image_into_numpy_array(image)
@@ -164,12 +164,13 @@ while True:
       image_np,
       output_dict['detection_boxes'],
       output_dict['detection_classes'],
-      output_dict['detection_scores'],
+      #output_dict['detection_scores'],
       category_index,
       instance_masks=output_dict.get('detection_masks'),
       use_normalized_coordinates=True,
       line_thickness=8)
     plt.figure(figsize=IMAGE_SIZE)
     cv2.imshow(image_np)
-    
+   
+cv2.destroyAllWindows()
 
