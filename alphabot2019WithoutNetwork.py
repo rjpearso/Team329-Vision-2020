@@ -164,7 +164,7 @@ while True:
                         centerOffset = round((ce[0] - 320),1)
                         ang = ang*-1
                        # print(str(centerOffset) + " Pixels to the right away from center.")
-                    else:
+                    elif (ce[0]-320) <= 5 or (ce[0]-320) >= -5:
                         print("Perfect Angle")
 
                     dist1 = (ang/320)*centerOffset
