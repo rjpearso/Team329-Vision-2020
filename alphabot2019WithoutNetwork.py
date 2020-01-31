@@ -55,11 +55,11 @@ def contour(cts):
     
 def CalcProperties(rightCenter, leftCenter):
     x = (rightCenter[1][0] * rightCenter[1][1] + leftCenter[1][0] * leftCenter[1][1]) / 2
-    dist = (1526.2 * x ** (-0.489))
+    dist = (.0357)*x**(1.47))
     return(dist)
 def OffsetCalcProperties(rightCenter, leftCenter):
     x = (rightCenter[1][0] * rightCenter[1][1] + leftCenter[1][0] * leftCenter[1][1]) / 2
-    dist = (1526.2 * x ** (-0.489))
+    dist = (.0357)*x**(1.47))
     xOffSet = -5
     theta = math.asin(xOffSet/dist)
     dist = dist * math.cos(theta)
