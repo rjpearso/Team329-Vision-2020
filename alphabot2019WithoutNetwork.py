@@ -53,12 +53,12 @@ def contour(cts):
     box = cv2.boxPoints(rect)
     return(np.int0(box),rect,box)
     
-def CalcProperties(rightCenter, leftCenter):
-    x = (rightCenter[1][0] * rightCenter[1][1] + leftCenter[1][0] * leftCenter[1][1]) / 2
+def CalcProperties(ce):
+    x = (ce[0] + ce[1])/2
     dist = (.0357)*x**(1.47))
     return(dist)
-def OffsetCalcProperties(rightCenter, leftCenter):
-    x = (rightCenter[1][0] * rightCenter[1][1] + leftCenter[1][0] * leftCenter[1][1]) / 2
+def OffsetCalcProperties(ce):
+    x = (ce[0] + ce[1])/2
     dist = (.0357)*x**(1.47))
     xOffSet = -5
     theta = math.asin(xOffSet/dist)
