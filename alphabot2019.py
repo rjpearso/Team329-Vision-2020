@@ -25,7 +25,7 @@ areaFactor = 0.8
 count = 1
 countframe = 0
 
-#import smbus #only need this if you want to send info to the arduino
+import smbus #only need this if you want to send info to the arduino
 ## It works without it.  Just don't uncomment the smbus lines below.
 ## We used this to turn a pixel read when we saw something
 ## it was helpful but total extra
@@ -52,12 +52,12 @@ def contour(cts):
     box = cv2.boxPoints(rect)
     return(np.int0(box),rect,box)
     
-def CalcProperties(rightCenter, leftCenter):
+def CalcProperties(ce):
     x = (ce[0] + ce[1])
     dist = (.0357)*x**(1.47))
     return(dist)
 
-def OffsetCalcProperties(rightCenter, leftCenter):
+def OffsetCalcProperties(ce):
     x = (ce[0] + ce[1])/2
     dist = (.0357)*x**(1.47))
     xOffSet = -5
@@ -181,12 +181,12 @@ while True:
                         centerOffset = round((ce[0] - 320),1)
                         ang = ang*-1
                        # print(str(centerOffset) + " Pixels to the right away from center.")
-                    elif (elif (ce[0]-320) <= 5 or (ce[0]-320) >= -5:
+                    elif (elif (ce[0]-320) <= 5 and (ce[0]-320) >= -5:
                         tryAgain = False
                         print("Perfect Angle")
 
                     dist1 = (ang/320)*centerOffset
-
+                    dist = CalcProperties(ce)
                     #################
                     #### This gets rid of the things that are too small
                     ###############################################
@@ -227,24 +227,12 @@ while True:
                 #These boxes tells you what you are calculating on the red boxes above show what you see
 
                 elif len(cnts) > 1:
-                    rightTargets = []
-                    leftTargets = []
+                    target = []
                     for c in cnts:
-                        ce,wh,angle = cv2.minAreaRect(c)# this gives you the center[[(x,y),(width,Height),angle],[],[]...]
-                        if abs(angle) <= 45 and abs(angle) >=4: #Are they right targets
-                            rightTargets.append([ce,wh,angle,wh[0]*wh[1]])
+                          target.append([ce,wh,angle,wh[0]*wh[1]])
                             
                             
-                        if abs(angle) > 45 and abs(angle) < 88: #Are They Left Targets
-                            leftTargets.append([ce,wh,angle,wh[0]*wh[1]])
-                            
-                            
-                            
-    ##                    print('************************************************************')
-    ##                    print('right targets are: ',rightTargets,' right = ',len(rightTargets))
-    ##                    print('left targets are: ',leftTargets,' left = ',len(leftTargets))
-    ##                    print('************************************************************')
-                        
+                          
                         boxd,rect,box = contour(cts)#### Creates box form contours
                         found = True
                         ####################
@@ -252,164 +240,26 @@ while True:
                         ####################
                         
                         #print('@@@@@@@@@@@@@@@@@@')
-                        if len(rightTargets) >= 1 and len(leftTargets) >= 1:
-                            rightCenter = min(rightTargets, key=lambda x:abs(x[0][0]-320))
-                            leftCenter = min(leftTargets, key=lambda x:abs(x[0][0]-320))
-                            rightMaxArea = max(rightTargets, key=lambda x:abs(x[3]))
-                            leftMaxArea = max(leftTargets, key=lambda x:abs(x[3]))
+                        if len(target) >= 1:
+                            targetCenter = min(target, key=lambda x:abs(x[0][0]-320))
+                            targetMaxArea = max(target, key=lambda x:abs(x[3]))
 
                             dumpR = []
-                            dumpL = []
                             b1=0
-                            c1=0
                             bb = []
-                            cc = []
                             bbb = 0
                             ccc = 0
-                            for bb in rightTargets:
+                            for bb in target:
                                 #print(bb)
                                 #print(rightMaxArea)
-                                if .75 * rightMaxArea[3] > float(bb[3]):
+                                if .75 * targetMaxArea[3] > float(bb[3]):
                                     dumpR.append(b1)
                                 b1 +=1
                                 #print(dumpR)
-                            for cc in leftTargets:
-                                if .75 * leftMaxArea[3] > float(cc[3]):
-                                    dumpL.append(c1)
-                                c1 +=1
-                                #print(dumpL)
-                            if dumpL is not None:
-                            
-                                for bbb in range(1, len(dumpL) + 1):
-                                    del leftTargets[dumpL[-bbb]]
                             if dumpR is not None:
-
                                 for ccc in range(1, len(dumpR) + 1):
-                                    del rightTargets[dumpR[-ccc]]
+                                    del target[dumpR[-ccc]]
 
-
-                            
-                            if rightCenter[0][0] > areaFactor * float(rightMaxArea[0][0]): ## We are looking at a target which is close to the center
-                                
-                                if leftCenter[0][0] <= rightCenter[0][0]:
-                                    screenText = 'Hatch'
-                                    heightRight = (rightCenter[0][1] + (rightCenter[1][1]/2)) * 2
-                                    heightLeft = (leftCenter[0][1] + (leftCenter[1][1]/2)) * 2
-                                    dist, theta = OffsetCalcProperties(rightCenter, leftCenter) #= (95.841 * x ** -0.449)*12 #this is the formula to calc distance.  You will need to do this in excel for your camera
-                                    #print('Distance: ' + str(dist)) ### Put this back for testing
-                                
-                                    #if rightCenter[3] >= areaFactor*rightMaxArea[3] and leftCenter[3] >= areaFactor*leftMaxArea[3]:
-                                    pixInchConv = centerInches / abs((leftCenter[0][0] - rightCenter[0][0]))
-                                    perpDist = pixInchConv * (((leftCenter[0][0] + rightCenter[0][0]) / 2) - 320) #need to test this on robot
-                                    turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                                   # tryAgain = False #we should hit it
-                                    
-                                elif leftCenter[0][0] > rightCenter[0][0] :
-                                    dist, theta = OffsetCalcProperties(rightCenter, leftCenter)#dist = CalcProperties(rightCenter, leftCenter)
-                                    #print('Distance: ' + str(dist)) ### Put this back for testing
-                                
-                                    #if rightCenter[3] >= areaFactor*rightMaxArea[3] and leftCenter[3] >= areaFactor*leftMaxArea[3]:
-                                    pixInchConv = centerInches / abs((leftCenter[0][0] - rightCenter[0][0]))
-                                    perpDist = pixInchConv * (((leftCenter[0][0] + rightCenter[0][0]) / 2) - 320) #need to test this on robot
-                                    turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                                    #tryAgain = True
-                                else:
-                                    dist, theta = OffsetCalcProperties(rightCenter, leftCenter)#dist = CalcProperties(rightCenter, leftCenter)
-                                    #print('Distance: ' + str(dist)) ### Put this back for testing
-                                
-                                    #if rightCenter[3] >= areaFactor*rightMaxArea[3] and leftCenter[3] >= areaFactor*leftMaxArea[3]:
-                                    pixInchConv = centerInches / abs((leftCenter[0][0] - rightCenter[0][0]))
-                                    perpDist = pixInchConv * (((leftCenter[0][0] + rightCenter[0][0]) / 2) - 320) #need to test this on robot
-                                    turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                                    #tryAgain = True
-                                    
-                            elif leftMaxArea[0][0] > leftCenter[0][0]:
-                                dist, theta = OffsetCalcProperties(rightCenter, leftCenter)#dist = CalcProperties(rightCenter, leftCenter)
-                                #print('Distance: ' + str(dist)) ### Put this back for testing
-                                
-                                #if rightCenter[3] >= areaFactor*rightMaxArea[3] and leftCenter[3] >= areaFactor*leftMaxArea[3]:
-                                pixInchConv = centerInches / abs((leftMaxArea[0][0] - rightMaxArea[0][0]))
-                                perpDist = pixInchConv * (((leftMaxArea[0][0] + rightMaxArea[0][0]) / 2) - 320) #need to test this on robot
-                                turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                              #  tryAgain = True
-                                
-                            elif rightMaxArea[0][0] > rightCenter[0][0]:
-                                dist, theta = OffsetCalcProperties(rightCenter, leftCenter)#dist = CalcProperties(rightCenter, leftCenter) #= (95.841 * x ** -0.449)*12 #this is the formula to calc distance.  You will need to do this in excel for your camera
-                                #print('Distance: ' + str(dist)) ### Put this back for testing
-                                
-                                #if rightCenter[3] >= areaFactor*rightMaxArea[3] and leftCenter[3] >= areaFactor*leftMaxArea[3]:
-                                pixInchConv = centerInches / abs((leftMaxArea[0][0] - rightMaxArea[0][0]))
-                                perpDist = pixInchConv * (((leftMaxArea[0][0] + rightMaxArea[0][0]) / 2) - 320) #need to test this on robot
-                                turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                               # tryAgain = True
-                                
-                            else:
-                                dist, theta = OffsetCalcProperties(rightCenter, leftCenter)#£dist = CalcProperties(rightCenter, leftCenter) (95.841 * x ** -0.449)*12 #this is the formula to calc distance.  You will need to do this in excel for your camera
-                                #print('Distance: ' + str(dist)) ### Put this back for testing
-                                
-                                #if rightCenter[3] >= areaFactor*rightMaxArea[3] and leftCenter[3] >= areaFactor*leftMaxArea[3]:
-                                pixInchConv = centerInches / abs((leftMaxArea[0][0] - rightMaxArea[0][0]))
-                                perpDist = pixInchConv * (((leftMaxArea[0][0] + rightMaxArea[0][0]) / 2) - 320) #need to test this on robot
-                                turnangle = round(math.degrees(math.atan(perpDist / dist) + theta),1)
-                              #  tryAgain = True
-
-
-
-##                                    
-##                                    if rightCenter[3] < rightMaxArea[3]:
-##                                        turnangle = 10
-##                                        tryAgain = True
-##                                    else :
-##                                        turnangle = -10
-##                                        tryAgain = True
-##                                    
-##
-##                            else: ## we are closer to the space between hatches
-##                                #print('&&&&&&&&&&&&&&&')
-##                                #print('between hatches')
-##                                screenText = 'Between'
-##                                if rightCenter[3] >= leftMaxArea[3]:
-##                                    turnangle = -5
-##                                    tryAgain = True
-##                                else:
-##                                    turnangle = 5
-##                                    tryAgain = True
-##                                    
-##                                #print('&&&&&&&&&&&&&&&')
-##                                ##################################################
-##                                ############# You will need to make sure the +- are right and left in your robot code
-##                                ##################################################
-##                                '''if abs(rightCenter[0][0]-320) <= a bs(leftCenter[0][0]-320): #You will have to think about this but its correct
-##                                    #print('Turn Left')
-##                                    turnangle = -5
-##                                    tryAgain = True
-##                                    screenText = screenText + ' Left'
-##                                elif abs(rightCenter[0][0]-320) > abs(leftCenter[0][0]-320):
-##                                    #print('Turn Right')
-##                                    turnangle = 5
-##                                    tryAgain = True
-##                                    screenText = screenText + ' Right'
-##
-##                                    '''
-##                                    
-##                        if rightCenter != 999 and leftCenter != 999: # Makes sure right center and left center have been initialized
-##                            heightRight = (rightCenter[0][1] + (rightCenter[1][1]/2)) * 2
-##                            heightLeft = (leftCenter[0][1] + (leftCenter[1][1]/2)) * 2
-##                            #print('Right:' + str(heightRight ) + 'Left: ' + str(heightLeft))
-##                            x = (rightCenter[1][0] * rightCenter[1][1] + leftCenter[1][0] * leftCenter[1][1]) / 2 #calculates the center of the left and right target
-##                            dist = (95.841 * x ** -0.449)*12 #this is the formula to calc distance.  You will need to do this in excel for your camera
-##                            #print('Distance: ' + str(dist)) ### Put this back for testing
-
-
-                        #else:
-                         #   print("Targets don't make sense")
-
-
-                    
-
-                        
-                #except:
-                #    pass
                 if dist is not None and turnangle is not None:
                     screenText = 'dist=' + str(round(dist,1)) + ' Ang=' + str(round(turnangle,1)) #+ ' dist=' + str(round(dist,1))#+ ' a2=' + str(round(a2,1))str(screenText) + ' Ang=' + str(round(turnangle,1)) + ' dist=' + str(round(dist,1))
                     #cv2.drawContours(display,[box.astype(int)],0,(255,0,0),2) #image channel must be 2 draw blue boxes
