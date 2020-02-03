@@ -198,7 +198,7 @@ while True:
                 
                 centerFind =  800 #just assign to a big number so first value replaces it
                 
-                if len(cnts) == 1:
+                if len(cnts) > 1 or len(cnts) < 1:
                     #turn 20 degrees to the see 2 then recheck (robot code)
                     if cnts[0][0][0][0] >= 320:
                         turnangle=20 # not sure 20 is the right number
@@ -211,7 +211,7 @@ while True:
                 #########################################
                 #These boxes tells you what you are calculating on the red boxes above show what you see
 
-                elif len(cnts) > 1:
+                elif len(cnts) == 1:
                     target = []
                     for c in cnts:
                           target.append([ce,wh,angle,wh[0]*wh[1]])
