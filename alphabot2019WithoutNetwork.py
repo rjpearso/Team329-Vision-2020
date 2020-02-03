@@ -24,30 +24,7 @@ imgSize = 640
 areaFactor = 0.8
 count = 1
 countframe = 0
-        
-import smbus '''#only need this if you want to send info to the arduino
-## It works without it.  Just don't uncomment the smbus lines below.
-## We used this to turn a pixel read when we saw something
-## it was helpful but total extra
 
-##setup network table connection to robot
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.settimeout(0)
-print('Network Tables is setup on Pi')
-
-while 1:
-    try:
-       ip = socket.gethostbyname('roboRIO-329-FRC.local')
-       print('Connected to robot')
-       break
-    except:
-        print('Waiting for NWT and Roborio connection')
-        time.sleep(.5)
-        pass
-        nt.initialize(server=ip)
-        sd = nt.getTable("SmartDashboard")
-        print('No Network Tables:  Aye, Aye')
-'''
 def contour(cts):
     rect = cv2.minAreaRect(cts)
     box = cv2.boxPoints(rect)
@@ -200,7 +177,7 @@ while True:
                 
                 if len(cnts) > 1 or len(cnts) < 1:
                     #turn 20 degrees to the see 2 then recheck (robot code)
-                    if cnts[0][0][0][0] >= 320:
+                    if ce[0] >= 320:
                         turnangle=20 # not sure 20 is the right number
                         #tryAgain = True #tell robot code to try again after move
                     else: #if not right its left
