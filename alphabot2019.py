@@ -215,7 +215,7 @@ while True:
                 
                 if len(cnts) > 1 or len(cnts) < 1:
                     #turn 20 degrees to the see 2 then recheck (robot code)
-                    if cnts[0][0][0][0] >= 320:
+                    if ce[0] >= 320:
                         turnangle=20 # not sure 20 is the right number
                         #tryAgain = True #tell robot code to try again after move
                     else: #if not right its left
