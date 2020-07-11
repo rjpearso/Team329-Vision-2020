@@ -282,6 +282,7 @@ while True:
                 PiOffsetDist = 0 #put in its distance back from bumper
                 dist = PiOffsetDist + dist
                 fps = 30
+                #fps = frame.get(5) # should work
                 try:
                     sd.putNumber("Turn Angle", dist1) #Add these back in to send data to Network tables
                     sd.putNumber("Try Again", tryAgain)
